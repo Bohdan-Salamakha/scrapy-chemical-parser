@@ -1,0 +1,1 @@
+Create .env file in the root directory using .env_sample template.

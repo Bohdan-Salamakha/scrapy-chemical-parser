@@ -9,7 +9,7 @@ https://docs.djangoproject.com/en/4.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.1/ref/settings/
 """
-from os import getenv
+from os import environ
 from pathlib import Path
 
 from dotenv import load_dotenv
@@ -22,22 +22,26 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = getenv("SECRET_KEY")
+SECRET_KEY = environ["SECRET_KEY"]
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = environ["DEBUG"] == "True"
 
 ALLOWED_HOSTS = []
 
 # Application definition
 
 INSTALLED_APPS = [
+    # base django apps
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    # installed apps
+    'rest_framework',
+    # my apps
 ]
 
 MIDDLEWARE = [
@@ -76,11 +80,11 @@ WSGI_APPLICATION = 'chemical_parser.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': getenv("POSTGRES_NAME"),
-        'USER': getenv("POSTGRES_USER"),
-        'PASSWORD': getenv("POSTGRES_PASSWORD"),
-        'HOST': getenv("POSTGRES_HOST"),
-        'PORT': getenv("POSTGRES_PORT"),
+        'NAME': environ["POSTGRES_NAME"],
+        'USER': environ["POSTGRES_USER"],
+        'PASSWORD': environ["POSTGRES_PASSWORD"],
+        'HOST': environ["POSTGRES_HOST"],
+        'PORT': environ["POSTGRES_PORT"],
     }
 }
 
@@ -107,7 +111,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Europe/Kiev'
 
 USE_I18N = True
 
@@ -117,8 +121,19 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
 
 STATIC_URL = 'static/'
+STATIC_ROOT = "static/"
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Celery
+CELERY_BROKER_URL = environ["CELERY_BROKER_URL"]
+CELERY_RESULT_BACKEND = environ["CELERY_RESULT_BACKEND"]
+CELERY_TIMEZONE = "Europe/Kiev"
+CELERY_TASK_TRACK_STARTED = True
+CELERY_TASK_TIME_LIMIT = 3600 * 24
+CELERY_IMPORTS = [
+    "parsers.tasks",
+]

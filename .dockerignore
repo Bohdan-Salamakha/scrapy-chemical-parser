@@ -2,3 +2,5 @@
 poetry.lock
 .venv
 .git
+.idea
+__pycache__
