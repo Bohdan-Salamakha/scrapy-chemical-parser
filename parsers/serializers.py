@@ -9,9 +9,5 @@ class ChemicalProductSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
-class ScrapeSiteSerializer(serializers.Serializer):
-    company_name = serializers.ChoiceField(
-        choices=[
-            "accelpharmtech"
-        ]
-    )
+class NumcasSerializer(serializers.Serializer):
+    numcas = serializers.CharField()

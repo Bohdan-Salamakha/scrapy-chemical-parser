@@ -17,7 +17,7 @@ SPIDER_MODULES = ["chemical_scraper.spiders"]
 NEWSPIDER_MODULE = "chemical_scraper.spiders"
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
-USER_AGENT = 'Mozilla/5.0 (X11; Linux x86_64; rv:7.0.1) Gecko/20100101 Firefox/7.7'
+USER_AGENT = "Mozilla/5.0 (X11; Linux x86_64; rv:7.0.1) Gecko/20100101 Firefox/7.7"
 
 # Obey robots.txt rules
 ROBOTSTXT_OBEY = True
@@ -97,22 +97,22 @@ TWISTED_REACTOR = "twisted.internet.asyncioreactor.AsyncioSelectorReactor"
 FEED_EXPORT_ENCODING = "utf-8"
 
 # Splash Server Endpoint
-SPLASH_URL = 'http://splash:8050'
+SPLASH_URL = "http://splash:8050"
 
 # Enable Splash downloader middleware and change HttpCompressionMiddleware priority
 DOWNLOADER_MIDDLEWARES = {
-    'scrapy_splash.SplashCookiesMiddleware': 723,
-    'scrapy_splash.SplashMiddleware': 725,
-    'scrapy.downloadermiddlewares.httpcompression.HttpCompressionMiddleware': 810,
+    "scrapy_splash.SplashCookiesMiddleware": 723,
+    "scrapy_splash.SplashMiddleware": 725,
+    "scrapy.downloadermiddlewares.httpcompression.HttpCompressionMiddleware": 810,
 }
 
 # Enable Splash Deduplicate Args Filter
 SPIDER_MIDDLEWARES = {
-    'scrapy_splash.SplashDeduplicateArgsMiddleware': 100,
+    "scrapy_splash.SplashDeduplicateArgsMiddleware": 100,
 }
 
 # Define the Splash DupeFilter
-DUPEFILTER_CLASS = 'scrapy_splash.SplashAwareDupeFilter'
+DUPEFILTER_CLASS = "scrapy_splash.SplashAwareDupeFilter"
 
 # Database
 POSTGRES_NAME = environ["POSTGRES_NAME"]

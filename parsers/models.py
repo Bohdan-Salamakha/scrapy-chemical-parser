@@ -15,7 +15,7 @@ class ChemicalProduct(models.Model):
     product_url = models.URLField(max_length=1024)
     collected_at = models.DateTimeField(auto_now_add=True)
     availability = models.BooleanField()
-    numcas = models.CharField(max_length=255)
+    numcas = models.CharField(max_length=255, unique=True)
     name = models.CharField(max_length=255)
     qt_list = ArrayField(models.IntegerField(), size=5)
     unit_list = ArrayField(models.CharField(choices=Unit.choices, max_length=8), size=5)

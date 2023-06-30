@@ -3,16 +3,15 @@
 # Don't forget to add your pipeline to the ITEM_PIPELINES setting
 # See: https://docs.scrapy.org/en/latest/topics/item-pipeline.html
 import datetime
+import logging
 
 import psycopg2
+from psycopg2 import IntegrityError
 from scrapy.exceptions import DropItem
 
 
-# useful for handling different item types with a single interface
-
-
 class ValidationPipeline:
-    allowed_units = ['mg', 'g', 'kg', 'ml', 'l']
+    allowed_units = ["mg", "g", "kg", "ml", "l"]
 
     def process_item(self, item, spider):
         item.qt_list = item.qt_list[:5]
@@ -26,7 +25,9 @@ class ValidationPipeline:
         unit_list_length = len(item.unit_list)
         item.unit_list = [unit for unit in item.unit_list if unit in self.allowed_units]
 
-        if qt_list_length != len(item.qt_list) or unit_list_length != len(item.unit_list):
+        if qt_list_length != len(item.qt_list) or unit_list_length != len(
+            item.unit_list
+        ):
             raise DropItem(
                 f"Inconsistent lengths for qt_list, unit_list, currency_list, price_pack_list in item: {item}"
             )
@@ -35,6 +36,7 @@ class ValidationPipeline:
 
 class PostgresPipeline:
     def __init__(self, db_host, db_port, db_name, db_user, db_password):
+        self.logger = logging.getLogger(__name__)
         self.table_name = "parsers_chemicalproduct"
         self.db_host = db_host
         self.db_port = db_port
@@ -44,12 +46,35 @@ class PostgresPipeline:
 
     @classmethod
     def from_crawler(cls, crawler):
-        db_host = crawler.settings.get('POSTGRES_HOST')
-        db_port = crawler.settings.get('POSTGRES_PORT')
-        db_name = crawler.settings.get('POSTGRES_NAME')
-        db_user = crawler.settings.get('POSTGRES_USER')
-        db_password = crawler.settings.get('POSTGRES_PASSWORD')
+        db_host = crawler.settings.get("POSTGRES_HOST")
+        db_port = crawler.settings.get("POSTGRES_PORT")
+        db_name = crawler.settings.get("POSTGRES_NAME")
+        db_user = crawler.settings.get("POSTGRES_USER")
+        db_password = crawler.settings.get("POSTGRES_PASSWORD")
         return cls(db_host, db_port, db_name, db_user, db_password)
+
+    def open_spider(self, spider):
+        if spider.name == "accelpharmtech_spider":
+            connection = psycopg2.connect(
+                host=self.db_host,
+                port=self.db_port,
+                dbname=self.db_name,
+                user=self.db_user,
+                password=self.db_password,
+            )
+            cur = connection.cursor()
+            try:
+                cur.execute(
+                    f"DELETE FROM {self.table_name} WHERE company_name = 'Accelpharmtech'"
+                )
+            except Exception as e:
+                self.logger.error(f"Failed to delete records: {e}")
+                connection.rollback()
+            else:
+                connection.commit()
+            finally:
+                cur.close()
+                connection.close()
 
     def process_item(self, item, spider):
         connection = psycopg2.connect(
@@ -57,7 +82,7 @@ class PostgresPipeline:
             port=self.db_port,
             dbname=self.db_name,
             user=self.db_user,
-            password=self.db_password
+            password=self.db_password,
         )
         cur = connection.cursor()
         sql = f"""INSERT INTO {self.table_name} (company_name, product_url, numcas, 
@@ -73,10 +98,16 @@ class PostgresPipeline:
             item.currency_list,
             item.price_pack_list,
             item.availability,
-            datetime.datetime.now()
+            datetime.datetime.now(),
         )
-        cur.execute(sql, values)
-        connection.commit()
-        cur.close()
-        connection.close()
+        try:
+            cur.execute(sql, values)
+        except IntegrityError as e:
+            self.logger.error(f"Integrity error for item {item.numcas}: {e}")
+            connection.rollback()
+        else:
+            connection.commit()
+        finally:
+            cur.close()
+            connection.close()
         return item

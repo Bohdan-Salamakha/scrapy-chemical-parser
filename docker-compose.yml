@@ -50,6 +50,8 @@ services:
     ports:
       - "6800:6800"
     restart: unless-stopped
+    env_file:
+      - .env
     depends_on:
       - redis
       - app
@@ -75,6 +77,8 @@ services:
       - "8050:8050"
     depends_on:
       - scrapyd
+    env_file:
+      - .env
 
 volumes:
     static_volume: {}

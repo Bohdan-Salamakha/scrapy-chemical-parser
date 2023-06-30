@@ -18,4 +18,3 @@ class ChemicalProductItem:
     currency_list: list[str]
     price_pack_list: list[int]
     availability: Optional[bool] = field(default=None)
-
