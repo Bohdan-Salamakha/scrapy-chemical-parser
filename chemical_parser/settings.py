@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     # installed apps
     'rest_framework',
     # my apps
+    "parsers.apps.ParsersConfig"
 ]
 
 MIDDLEWARE = [
@@ -76,15 +77,20 @@ WSGI_APPLICATION = 'chemical_parser.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
+POSTGRES_NAME = environ["POSTGRES_NAME"]
+POSTGRES_USER = environ["POSTGRES_USER"]
+POSTGRES_PASSWORD = environ["POSTGRES_PASSWORD"]
+POSTGRES_HOST = environ["POSTGRES_HOST"]
+POSTGRES_PORT = environ["POSTGRES_PORT"]
 
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': environ["POSTGRES_NAME"],
-        'USER': environ["POSTGRES_USER"],
-        'PASSWORD': environ["POSTGRES_PASSWORD"],
-        'HOST': environ["POSTGRES_HOST"],
-        'PORT': environ["POSTGRES_PORT"],
+        'NAME': POSTGRES_NAME,
+        'USER': POSTGRES_USER,
+        'PASSWORD': POSTGRES_PASSWORD,
+        'HOST': POSTGRES_HOST,
+        'PORT': POSTGRES_PORT,
     }
 }
 

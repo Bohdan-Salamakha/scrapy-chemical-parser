@@ -3,10 +3,19 @@
 # See documentation in:
 # https://docs.scrapy.org/en/latest/topics/items.html
 
-import scrapy
+from dataclasses import dataclass, field
+from typing import Optional
 
 
-class ChemicalScraperItem(scrapy.Item):
-    # define the fields for your item here like:
-    # name = scrapy.Field()
-    pass
+@dataclass
+class ChemicalProductItem:
+    company_name: str
+    product_url: str
+    numcas: str
+    name: str
+    qt_list: list[int]
+    unit_list: list[str]
+    currency_list: list[str]
+    price_pack_list: list[int]
+    availability: Optional[bool] = field(default=None)
+

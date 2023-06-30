@@ -68,6 +68,14 @@ services:
     env_file:
       - .env
 
+  splash:
+    image: scrapinghub/splash:latest
+    restart: unless-stopped
+    ports:
+      - "8050:8050"
+    depends_on:
+      - scrapyd
+
 volumes:
     static_volume: {}
     postgres_data: {}
